@@ -4,7 +4,7 @@ import (
 	"os"
 	"testing"
 
-	hwebhook "github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/webhook"
+	hwebhook "github.com/S-Bohn/cert-manager-webhook-hetzner/internal/webhook"
 	"github.com/jetstack/cert-manager/test/acme/dns"
 )
 

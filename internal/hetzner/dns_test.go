@@ -4,14 +4,21 @@ import (
 	"bytes"
 	"context"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/hetzner"
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/mocks"
+	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/hetzner"
 	"github.com/matryer/is"
 )
+
+type HTTPMockClient struct {
+	DoFunc func(req *http.Request) (*http.Response, error)
+}
+
+func (s HTTPMockClient) Do(req *http.Request) (*http.Response, error) {
+	return s.DoFunc(req)
+}
 
 func TestCreateRecord(t *testing.T) {
 	is := is.New(t)
@@ -20,7 +27,7 @@ func TestCreateRecord(t *testing.T) {
 	req := &http.Request{}
 	res := &http.Response{}
 
-	d.Client = mocks.HTTPMockClient{
+	d.Client = HTTPMockClient{
 		DoFunc: func(r *http.Request) (*http.Response, error) {
 			req = r
 			return res, nil
@@ -28,7 +35,7 @@ func TestCreateRecord(t *testing.T) {
 	}
 	res = &http.Response{
 		StatusCode: 200,
-		Body: ioutil.NopCloser(bytes.NewReader([]byte(`{"record": {
+		Body: io.NopCloser(bytes.NewReader([]byte(`{"record": {
 				"type": "A",
 				"id": "the_id",
 				"created": "2021-08-18T13:08:19Z",
@@ -65,7 +72,7 @@ func TestLoadByName(t *testing.T) {
 	err := fmt.Errorf("")
 	err = nil
 
-	d.Client = mocks.HTTPMockClient{
+	d.Client = HTTPMockClient{
 		DoFunc: func(r *http.Request) (*http.Response, error) {
 			req = r
 			return res, err
@@ -73,7 +80,7 @@ func TestLoadByName(t *testing.T) {
 	}
 	res = &http.Response{
 		StatusCode: 200,
-		Body: ioutil.NopCloser(bytes.NewReader([]byte(`
+		Body: io.NopCloser(bytes.NewReader([]byte(`
 		{
 			"zones": [
 			  {
@@ -143,7 +150,7 @@ func TestDeleteRecord(t *testing.T) {
 	err := fmt.Errorf("")
 	err = nil
 
-	d.Client = mocks.HTTPMockClient{
+	d.Client = HTTPMockClient{
 		DoFunc: func(r *http.Request) (*http.Response, error) {
 			req = r
 			return res, err
@@ -151,7 +158,7 @@ func TestDeleteRecord(t *testing.T) {
 	}
 	res = &http.Response{
 		StatusCode: 200,
-		Body:       ioutil.NopCloser(bytes.NewReader([]byte(``))),
+		Body:       io.NopCloser(bytes.NewReader([]byte(``))),
 	}
 
 	e := d.DeleteRecord(context.TODO(), "Z0n31dz0Ne")

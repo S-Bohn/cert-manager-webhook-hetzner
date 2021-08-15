@@ -4,11 +4,11 @@ import (
 	"encoding/json"
 	"testing"
 
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/hetzner"
+	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/hetzner"
 	"github.com/matryer/is"
 )
 
-func TestUnmarschalZone(t *testing.T) {
+func TestUnmarshalZone(t *testing.T) {
 	is := is.New(t)
 	res := hetzner.Zone{}
 	err := json.Unmarshal([]byte(`

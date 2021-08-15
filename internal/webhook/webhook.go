@@ -6,7 +6,7 @@ import (
 	"fmt"
 	"regexp"
 
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/hetzner"
+	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/hetzner"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	cmmeta "github.com/jetstack/cert-manager/pkg/apis/meta/v1"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -158,7 +158,7 @@ func (c *HetznerDNSProviderSolver) CleanUp(ch *v1alpha1.ChallengeRequest) error 
 
 // extractDomain transforms cert managers FQDN into name and domain.
 func extractDomain(fqdn string) (string, string, error) {
-	r := regexp.MustCompile(`^([^.]+)\.(.+)\.$`)
+	r := regexp.MustCompile(`^(.+)\.([^.]+\.[^.]+)\.$`)
 	m := r.FindStringSubmatch(fqdn)
 	if len(m) != 3 {
 		return "", "", fmt.Errorf("failed to split FQDN")

@@ -1,5 +1,8 @@
 # ACME webhook for Hetzner DNS API
 
+TODO:  [![Build Status](https://drone.idlerelaychat.de/api/badges/soeren/cert-manager-webhook-hetzner/status.svg?ref=refs/heads/main)](https://drone.idlerelaychat.de/soeren/cert-manager-webhook-hetzner)
+
+
 This is a webhook to be used with [cert-manager](https://www.cert-manager.io). It implements the DNS01 challenge solving logic with the [Hetzner DNS API](https://dns.hetzner.com/api-docs)
 
 ## Installation

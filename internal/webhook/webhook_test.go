@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"testing"
 
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/hetzner"
-	"github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/mocks"
-	hw "github.com/S-Bohn/cert-manager-webhook-hetzner/pkg/webhook"
+	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/hetzner"
+	hw "github.com/S-Bohn/cert-manager-webhook-hetzner/internal/webhook"
 	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/matryer/is"
 	v1 "k8s.io/api/core/v1"
@@ -17,6 +16,29 @@ import (
 	testclient "k8s.io/client-go/kubernetes/fake"
 	"k8s.io/client-go/rest"
 )
+
+type DNSMock struct {
+	LoadZoneByNameFunc func(ctx context.Context, name string) (*hetzner.Zone, error)
+	CreateRecordFunc   func(ctx context.Context, zoneID string, info hetzner.RecordInfo) (hetzner.Record, error)
+	DeleteRecordFunc   func(ctx context.Context, id string) error
+	LoadRecordsFunc    func(ctx context.Context, i string) ([]hetzner.Record, error)
+}
+
+func (s *DNSMock) CreateRecord(ctx context.Context, zoneID string, info hetzner.RecordInfo) (hetzner.Record, error) {
+	return s.CreateRecordFunc(ctx, zoneID, info)
+}
+
+func (s *DNSMock) DeleteRecord(ctx context.Context, id string) error {
+	return s.DeleteRecordFunc(ctx, id)
+}
+
+func (s *DNSMock) LoadZoneByName(ctx context.Context, name string) (*hetzner.Zone, error) {
+	return s.LoadZoneByNameFunc(ctx, name)
+}
+
+func (s *DNSMock) LoadRecords(ctx context.Context, id string) ([]hetzner.Record, error) {
+	return s.LoadRecordsFunc(ctx, id)
+}
 
 func TestName(t *testing.T) {
 	is := is.New(t)
@@ -75,7 +97,7 @@ func TestPresent(t *testing.T) {
 			}}), nil
 	}
 	w.DNSClientFactory = func(s1, s2 string) hetzner.DNSClient {
-		return &mocks.DNSMock{
+		return &DNSMock{
 			LoadZoneByNameFunc: func(ctx context.Context, name string) (*hetzner.Zone, error) {
 				isr.Equal(name, "example.org") // id of loaded zone must match
 
@@ -138,7 +160,7 @@ func TestCleanUp(t *testing.T) {
 			}}), nil
 	}
 	w.DNSClientFactory = func(s1, s2 string) hetzner.DNSClient {
-		return &mocks.DNSMock{
+		return &DNSMock{
 			LoadZoneByNameFunc: func(ctx context.Context, name string) (*hetzner.Zone, error) {
 				isr.Equal(name, "example.org") // loaded zone name must match
 

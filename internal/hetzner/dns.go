@@ -6,7 +6,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"os"
@@ -40,7 +39,7 @@ func NewDNS(key string, endpoint string) *DNS {
 	}
 }
 
-// LoadZone loads a DNS zone by given name.
+// LoadZoneByName loads a DNS zone by given name.
 func (s *DNS) LoadZoneByName(ctx context.Context, name string) (*Zone, error) {
 	d, err := s.hetznerCall(ctx, "GET", fmt.Sprintf("%s/v1/zones?name=%s", s.ApiEndpoint, url.QueryEscape(name)), nil)
 	if err != nil {
@@ -132,13 +131,15 @@ func (s *DNS) hetznerCall(ctx context.Context, method string, url string, body i
 		}
 	}()
 
-	respBody, _ := ioutil.ReadAll(resp.Body)
+	respBody, _ := io.ReadAll(resp.Body)
 
 	if resp.StatusCode == http.StatusOK {
 		return respBody, nil
 	}
 
+	reqBody, _ := io.ReadAll(body)
 	err = fmt.Errorf("HTTP %s request to %s failed with status %s", method, url, resp.Status)
-	klog.ErrorS(err, "HTTP request failed", "Status", resp.Status, "URL", url, "Method", method, "Body", respBody, "Header", resp.Header)
+	klog.ErrorS(err, "HTTP request failed", "Status", resp.Status,
+		"URL", url, "Method", method, "Body", respBody, "Header", resp.Header, "reqBody", reqBody)
 	return nil, err
 }

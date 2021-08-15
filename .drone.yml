@@ -1,6 +1,6 @@
 kind: pipeline
 type: kubernetes
-name: opensmptd
+name: build
 metadata:
   namespace: drone
 steps:
@@ -9,22 +9,22 @@ steps:
     depends_on: ["clone"]
     resources:
       requests:
-        cpu: "50m"
+        cpu: 50
         memory: 250MiB
       limits:
-        cpu: "1000m"
+        cpu: 2000
         memory: 1GiB
     settings:
       dockerfile: Dockerfile
       username:
-        from_secret: docker_username
+        from_secret: docker_user
       password:
-        from_secret: docker_password
+        from_secret: drone_pw
       registry: registry.idlerelaychat.de
       repo: cert-manager-webhook-hetzner
       tags:
         - latest
-        - v0.0.1
+        - v0.0.3
 ---
 kind: secret
 name: docker_username

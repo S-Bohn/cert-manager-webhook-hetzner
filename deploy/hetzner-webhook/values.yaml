@@ -13,8 +13,8 @@ certManager:
   serviceAccountName: cert-manager
 
 image:
-  repository: sbohn/cert-manager-webhook-hetzner
-  tag: latest
+  repository: registry.idlerelaychat.de/cert-manager-webhook-hetzner # sbohn/cert-manager-webhook-hetzner
+  tag: v0.0.1
   pullPolicy: IfNotPresent
 
 nameOverride: ""
