@@ -1,0 +1,39 @@
+kind: pipeline
+type: kubernetes
+name: opensmptd
+metadata:
+  namespace: drone
+steps:
+  - name: cert-manager-webhook-hetzner
+    image: banzaicloud/drone-kaniko
+    depends_on: ["clone"]
+    resources:
+      requests:
+        cpu: "50m"
+        memory: 250MiB
+      limits:
+        cpu: "1000m"
+        memory: 1GiB
+    settings:
+      dockerfile: Dockerfile
+      username:
+        from_secret: docker_username
+      password:
+        from_secret: docker_password
+      registry: registry.idlerelaychat.de
+      repo: cert-manager-webhook-hetzner
+      tags:
+        - latest
+        - v0.0.1
+---
+kind: secret
+name: docker_username
+get:
+  path: pipeline-secrets
+  name: REGISTRY_USER
+---
+kind: secret
+name: docker_password
+get:
+  path: pipeline-secrets
+  name: REGISTRY_PASSWORD
