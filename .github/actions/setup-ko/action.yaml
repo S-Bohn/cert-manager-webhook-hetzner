@@ -1,0 +1,51 @@
+name: 'Setup ko'
+description: 'Install and authorize ko'
+branding:
+  icon: box
+  color: green
+inputs:
+  version:
+    description: 'Version of ko to install (tip, latest-release, v0.8.2, etc.)'
+    required: true
+    default: 'latest-release'
+runs:
+  using: "composite"
+  steps:
+    - shell: bash
+      run: |
+        set -ex
+        # Install ko:
+        # - if version is "tip", install from tip of main.
+        # - if version is "latest-release", look up latest release.
+        # - otherwise, install the specified version.
+        case ${{ inputs.version }} in
+        tip)
+          echo "Installing ko using go install"
+          go install github.com/google/ko@main
+          ;;
+        latest-release)
+          tag=$(curl -L -s -u "username:${{ github.token }}" https://api.github.com/repos/ko-build/ko/releases/latest | jq -r '.tag_name')
+          ;;
+        *)
+          tag="${{ inputs.version }}"
+        esac
+        os=${{ runner.os }}
+        if [[ $os == "macOS" ]]; then
+          os="Darwin"
+        fi
+        if [[ ! -z ${tag} ]]; then
+          echo "Installing ko @ ${tag} for ${os}"
+          curl -fsL https://github.com/ko-build/ko/releases/download/${tag}/ko_${tag:1}_${os}_x86_64.tar.gz | sudo tar xzf - -C /usr/local/bin ko
+        fi
+        if [[ ! -z ${KO_DOCKER_REPO} ]]; then
+          echo "KO_DOCKER_REPO is already set"
+          echo "Skipping login to ghcr.io and passing KO_DOCKER_REPO=${KO_DOCKER_REPO} on to future steps"
+          echo "KO_DOCKER_REPO=${KO_DOCKER_REPO}" >> $GITHUB_ENV
+        else
+          # NB: username doesn't seem to matter.
+          echo "${{ github.token }}" | ko login ghcr.io --username "dummy" --password-stdin
+          # Set KO_DOCKER_REPO for future steps.
+          GITHUB_REPOSITORY="${{ github.repository }}"
+          echo "KO_DOCKER_REPO=ghcr.io/${GITHUB_REPOSITORY,,}"
+          echo "KO_DOCKER_REPO=ghcr.io/${GITHUB_REPOSITORY,,}" >> $GITHUB_ENV
+        fi
