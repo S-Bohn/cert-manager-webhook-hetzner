@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	hwebhook "github.com/S-Bohn/cert-manager-webhook-hetzner/internal/webhook"
-	"github.com/jetstack/cert-manager/test/acme/dns"
+	"github.com/cert-manager/cert-manager/test/acme/dns"
 )
 
 var (

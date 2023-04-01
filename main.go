@@ -5,7 +5,7 @@ import (
 	"os"
 
 	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/webhook"
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/cmd"
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/cmd"
 )
 
 var (

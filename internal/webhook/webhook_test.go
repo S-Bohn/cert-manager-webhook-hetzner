@@ -7,10 +7,12 @@ import (
 
 	"github.com/S-Bohn/cert-manager-webhook-hetzner/internal/hetzner"
 	hw "github.com/S-Bohn/cert-manager-webhook-hetzner/internal/webhook"
-	"github.com/jetstack/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
+
+	"github.com/cert-manager/cert-manager/pkg/acme/webhook/apis/acme/v1alpha1"
 	"github.com/matryer/is"
+
 	v1 "k8s.io/api/core/v1"
-	"k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1beta1"
+	apiextensionsv1 "k8s.io/apiextensions-apiserver/pkg/apis/apiextensions/v1"
 	meta_v1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	testclient "k8s.io/client-go/kubernetes/fake"
@@ -137,7 +139,7 @@ func TestPresent(t *testing.T) {
 		ResolvedFQDN:            "_acme-challenge.example.org.",
 		ResolvedZone:            "example.org.",
 		AllowAmbientCredentials: false,
-		Config:                  &v1beta1.JSON{Raw: []byte("{}")},
+		Config:                  &apiextensionsv1.JSON{Raw: []byte("{}")},
 	})
 	is.NoErr(err) // Present must not fail
 }
@@ -208,7 +210,7 @@ func TestCleanUp(t *testing.T) {
 		ResolvedFQDN:            "_acme-challenge.example.org.",
 		ResolvedZone:            "example.org.",
 		AllowAmbientCredentials: false,
-		Config:                  &v1beta1.JSON{Raw: []byte("{}")},
+		Config:                  &apiextensionsv1.JSON{Raw: []byte("{}")},
 	})
 	is.NoErr(err) // CleanUp must not fail
 }
