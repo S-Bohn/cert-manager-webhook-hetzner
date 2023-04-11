@@ -20,9 +20,7 @@ func main() {
 	flag.StringVar(&apiBaseURL, "api-base-url", apiBaseURL, "override hetzner dns api base url")
 	flag.StringVar(&defaultAPIKeyName, "api-key-secret-name", defaultAPIKeyName, "allows setting a default secret for the hetzner dns api key")
 	flag.StringVar(&defaultAPIKeyKey, "api-key-secret-key", defaultAPIKeyKey, "allows setting a default secret key for the hetzner dns api key")
-
-	flag.Parse()
-
+	
 	if groupName == "" {
 		panic("GROUP_NAME must be specified")
 	}
